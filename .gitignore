@@ -1,0 +1,22 @@
+# Dependências, builds e arquivos gerados pelo Tauri
+node_modules/
+/dist/
+/src-tauri/target/
+/src-tauri/gen/
+
+# Logs, cobertura de testes e caches
+logs/
+*.log
+coverage/
+.nyc_output/
+.vite/
+.cache/
+*.tsbuildinfo
+
+# Anotações pessoais e arquivos temporários
+/docs/ARQUITETURA.md
+
+# Instaladores e executáveis gerados
+*.exe
+*.msi
+*.msix

@@ -1,0 +1,34 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permissões padrão para o GestãoDocs",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:event:allow-listen",
+    "core:event:allow-emit",
+    "core:window:allow-start-dragging",
+    "core:window:allow-close",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-is-maximized",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "opener:allow-reveal-item-in-dir",
+    "fs:default",
+    "fs:allow-write-file",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [{
+        "name": "convert-doc",
+        "cmd": "powershell",
+        "args": [
+          "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+          "-File", "convert-doc.ps1",
+          { "validator": "(?i).+\\.docx?" },
+          { "validator": "(?i).+\\.pdf" }
+        ]
+      }]
+    }
+  ]
+}
