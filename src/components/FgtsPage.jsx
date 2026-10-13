@@ -1,20 +1,16 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { UploadCloud, Banknote, CheckCircle2 } from 'lucide-react';
 import { selectTxtFile, onFileDrop } from '../lib/tauri-api';
 import { readTextFile } from '../lib/file-io';
 import { parseFgtsTxt, generateFgtsPdf } from '../lib/process-fgts';
-import ResultsPanel from './ResultsPanel';
-import EfficiencyMetrics from './EfficiencyMetrics';
 
-export default function FgtsPage() {
+export default function FgtsPage({ onResults }) {
   const [dragOver, setDragOver] = useState(false);
   const [file, setFile] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [progressInfo, setProgressInfo] = useState(null);
   const [error, setError] = useState(null);
-  const [results, setResults] = useState(null);
 
-  const accent = '#1a3a5c';
+  const accent = '#367fb9';
 
   useEffect(() => {
     let unlistenDrop;
@@ -116,7 +112,7 @@ export default function FgtsPage() {
         totalCount: total,
       });
 
-      setResults({
+      onResults({
         totalEmployees: total,
         employees,
         totalPages: total,
@@ -131,43 +127,10 @@ export default function FgtsPage() {
     }
   };
 
-  const handleReset = () => {
-    setResults(null);
-    setFile(null);
-    setError(null);
-  };
-  if (results) {
-    return (
-      <div className="flex flex-col h-full text-text bg-background font-sans">
-        <header className="flex items-center gap-4 px-10 pt-8 pb-4 animate-fade-in-down">
-          <div className="flex items-center gap-2">
-            <div className="rounded-md p-1.5" style={{ background: `${accent}18` }}>
-              <Banknote className="w-5 h-5" style={{ color: accent }} />
-            </div>
-            <h1 className="text-text font-semibold text-lg">Extrato FGTS</h1>
-          </div>
-        </header>
-        <main className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10 no-drag">
-          <div className="max-w-4xl mx-auto w-full h-full flex flex-col gap-6 animate-fade-in">
-            <EfficiencyMetrics data={results} />
-            <ResultsPanel results={results} onReset={handleReset} />
-          </div>
-        </main>
-      </div>
-    );
-  }
   return (
     <div className="flex flex-col h-full bg-background font-sans no-drag">
-      <header className="flex items-center gap-4 px-10 pt-8 pb-4 animate-fade-in-down">
-        <div className="flex items-center gap-2">
-          <div className="rounded-md p-1.5" style={{ background: `${accent}18` }}>
-            <Banknote className="w-5 h-5" style={{ color: accent }} />
-          </div>
-          <h1 className="text-text font-semibold text-lg">Extrato FGTS</h1>
-        </div>
-      </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center px-10 pb-10 gap-6 animate-fade-in-up">
+      <main className="processing-workspace flex-1 flex flex-col items-center justify-center px-10 pb-10 gap-6 animate-fade-in-up">
         <p className="text-text-muted text-sm max-w-md text-center">
           Importe o arquivo TXT do Extrato Analítico FGTS da Caixa Econômica Federal. O sistema separa cada funcionário e gera um PDF individual formatado.
         </p>
@@ -177,7 +140,7 @@ export default function FgtsPage() {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className="relative w-full max-w-2xl cursor-pointer select-none"
+          className="upload-zone relative w-full max-w-2xl cursor-pointer select-none"
           style={{ minHeight: '340px' }}
         >
           <div
@@ -191,7 +154,7 @@ export default function FgtsPage() {
           <div className="relative z-10 flex flex-col items-center justify-center h-full gap-5 py-16 px-8">
             {processing ? (
               <>
-                <div className="w-16 h-16 rounded-full border-4 border-t-transparent animate-spin" style={{ borderColor: `${accent} transparent ${accent} ${accent}` }} />
+                <div className="w-5 h-5 shrink-0 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: `${accent} transparent ${accent} ${accent}` }} />
                 <p className="text-text-muted font-medium">{progressInfo?.message ?? 'Processando…'}</p>
                 {progressInfo?.progress != null && (
                   <div className="w-full max-w-xs">
@@ -206,15 +169,11 @@ export default function FgtsPage() {
               </>
             ) : file && !error ? (
               <>
-                <CheckCircle2 className="w-14 h-14" style={{ color: accent }} />
                 <p className="text-text font-semibold text-lg">{file}</p>
                 <p className="text-[#94a3b8] text-sm">Arquivo selecionado — clique para processar outro</p>
               </>
             ) : (
               <>
-                <div className="w-20 h-20 rounded-2xl flex items-center justify-center transition-transform duration-300" style={{ background: dragOver ? `${accent}20` : `${accent}10`, transform: dragOver ? 'scale(1.12)' : 'scale(1)' }}>
-                  <UploadCloud className="w-10 h-10 transition-transform duration-300" style={{ color: accent, transform: dragOver ? 'translateY(-4px)' : 'translateY(0)' }} />
-                </div>
                 <div className="text-center">
                   <p className="text-text font-semibold text-xl">{dragOver ? 'Solte o arquivo aqui' : 'Arraste o TXT para esta área'}</p>
                   <p className="text-[#94a3b8] text-sm mt-1">ou <span className="underline underline-offset-2" style={{ color: accent }}>clique para selecionar do computador</span></p>

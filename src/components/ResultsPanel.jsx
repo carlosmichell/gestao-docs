@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { CheckCircle2 } from 'lucide-react';
 import { selectSaveLocation, revealFile } from '../lib/tauri-api';
 import { writeBinaryFile } from '../lib/file-io';
 import { generateZip, generateCombinedZip } from '../lib/zip-utils';
@@ -50,23 +49,24 @@ export default function ResultsPanel({ results, onReset }) {
   };
 
   return (
-    <div className="bg-white border border-border rounded-2xl mb-12 p-6 shadow-sm flex flex-col h-100">
-      <div className="flex justify-between items-center mb-4">
+    <div className="results-panel w-full bg-white border border-border rounded-2xl mb-12 p-6 shadow-sm flex flex-col h-100">
+      <div className="mb-4">
         <h3 className="text-xl font-bold text-text flex items-center gap-2">
-          <CheckCircle2 className="w-6 h-6 text-emerald-500" /> Processamento Concluído
+          Processamento concluído
         </h3>
-        <span className="bg-surface-hover text-text px-3 py-1 rounded-full text-sm font-medium border border-border">
-          {results.totalEmployees} Funcionários
-        </span>
+        <p className="mt-1 text-sm text-text-muted">
+          {results.totalEmployees} {results.totalEmployees === 1 ? 'funcionário processado' : 'funcionários processados'} em{' '}
+          {(results.processingTimeMs / 1000).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} s.
+        </p>
       </div>
 
       <div className="flex-1 overflow-y-auto mb-6 pr-2 custom-scrollbar border border-border rounded-xl bg-background p-2">
         {results.employees.map((emp) => (
           <div key={emp.index} className="flex items-center justify-between p-3 border-b border-border last:border-0 transition-colors rounded-lg">
             <div className="flex items-center gap-3">
-              <div className="bg-surface-hover w-8 h-8 rounded-full flex items-center justify-center text-xs text-text-muted font-mono border border-border">
+              <span className="w-8 shrink-0 text-right text-xs text-text-muted tabular-nums">
                 {emp.index}
-              </div>
+              </span>
               <div>
                 <p className="text-text font-medium select-text">{emp.name}</p>
                 <p className="text-xs text-text-muted">
@@ -82,49 +82,38 @@ export default function ResultsPanel({ results, onReset }) {
                 </p>
               </div>
             </div>
-            <div className="text-emerald-500">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-            </div>
           </div>
         ))}
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="results-actions flex flex-wrap items-center gap-3">
         {zipStatus === null && (
           <button
             onClick={handleGenerateZip}
-            className="w-full bg-[#1a3a5c] hover:bg-[#153250] text-white font-medium py-3 px-4 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+            className="bg-primary hover:bg-primary-hover border border-transparent text-white text-sm font-medium py-2 px-4 rounded-xl transition-colors inline-flex items-center justify-center cursor-pointer"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
             Exportar como ZIP
           </button>
         )}
 
         {zipStatus === 'generating' && (
-          <button disabled className="w-full bg-surface-hover text-text-muted font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 cursor-wait border border-border">
+          <button disabled className="bg-surface-hover text-text-muted text-sm font-medium py-2 px-4 rounded-xl inline-flex items-center justify-center gap-2 cursor-wait border border-border">
             <div className="w-5 h-5 border-2 border-[#cbd5e1] border-t-transparent rounded-full animate-spin"></div>
             Gerando ZIP...
           </button>
         )}
 
         {zipStatus === 'success' && (
-          <div className="w-full flex gap-2">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={handleOpenFolder}
-              className="flex-1 bg-surface-hover hover:bg-border text-text font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 border border-border"
+              className="bg-surface-hover hover:bg-border text-text text-sm font-medium py-2 px-4 rounded-xl transition-colors inline-flex items-center justify-center border border-border"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
-              </svg>
               Abrir Pasta do ZIP
             </button>
             <button
               onClick={onReset}
-              className="flex-none bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 px-6 rounded-xl transition-colors"
+              className="bg-primary hover:bg-primary-hover text-white text-sm font-medium py-2 px-4 rounded-xl transition-colors"
             >
               Concluir
             </button>
@@ -132,7 +121,7 @@ export default function ResultsPanel({ results, onReset }) {
         )}
 
         {zipStatus === 'success' && zipError && (
-          <p className="text-red-600 text-sm" role="alert">{zipError}</p>
+          <p className="basis-full text-red-600 text-sm" role="alert">{zipError}</p>
         )}
 
         {zipStatus === 'error' && (
@@ -149,9 +138,9 @@ export default function ResultsPanel({ results, onReset }) {
         {zipStatus === null && (
           <button
             onClick={onReset}
-            className="w-full bg-transparent cursor-pointer text-text-muted hover:text-text font-medium py-2 px-4 rounded-xl transition-colors text-sm"
+            className="bg-white hover:bg-surface-hover border border-border cursor-pointer text-text font-medium py-2 px-4 rounded-xl transition-colors text-sm"
           >
-            Voltar ao Início
+            Nova operação
           </button>
         )}
       </div>

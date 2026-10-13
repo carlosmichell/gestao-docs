@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Stamp, ImagePlus, Save, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { PDFDocument } from 'pdf-lib';
 import { selectPdfFile, selectImageFile, selectPdfSaveLocation } from '../lib/tauri-api';
@@ -32,7 +32,6 @@ export default function StampPage() {
   const [error, setError]           = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
 
-  const accent = '#1a3a5c';
   const hNorm = useCallback(
     (w) => (w * pageSize.w) / (imageAspect * pageSize.h),
     [imageAspect, pageSize],
@@ -204,24 +203,15 @@ export default function StampPage() {
   const placementsOnPage   = placements.filter((p) => p.pageIndex === pageIndex);
   return (
     <div className="flex flex-col h-full bg-background font-sans no-drag">
-      <header className="flex items-center gap-4 px-10 pt-8 pb-4 animate-fade-in-down">
-        <div className="flex items-center gap-2">
-          <div className="rounded-md p-1.5" style={{ background: `${accent}18` }}>
-            <Stamp className="w-5 h-5" style={{ color: accent }} />
-          </div>
-          <h1 className="text-text font-semibold text-lg">Carimbo em PDF</h1>
-        </div>
-      </header>
-      <main className="flex-1 flex gap-6 px-10 pb-8 overflow-hidden animate-fade-in-up">
+      <main className="stamp-workspace flex-1 flex gap-6 px-10 pb-8 overflow-hidden animate-fade-in-up">
         <aside className="w-64 shrink-0 flex flex-col gap-4">
           <div className="bg-white rounded-2xl p-4 flex flex-col gap-2 border border-border">
             <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">1. Documento</p>
             <button
               id="btn-select-pdf"
               onClick={handleSelectPdf}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1a3a5c] text-white text-sm font-medium hover:bg-[#153250] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#367fb9] text-white text-sm font-medium hover:bg-[#286da7] transition-colors"
             >
-              <ImagePlus className="w-4 h-4" />
               {pdfPath ? 'Trocar PDF' : 'Selecionar PDF'}
             </button>
             {pdfPath && (
@@ -236,9 +226,8 @@ export default function StampPage() {
               id="btn-select-stamp"
               onClick={handleSelectImage}
               disabled={!pdfPath}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text text-sm font-medium hover:border-[#1a3a5c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text text-sm font-medium hover:border-[#367fb9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <ImagePlus className="w-4 h-4" />
               {imagePath ? 'Trocar imagem' : 'Escolher imagem'}
             </button>
             {imageDataUrl && (
@@ -254,7 +243,6 @@ export default function StampPage() {
                 onClick={handleAddStamp}
                 className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-border text-text text-sm font-medium hover:bg-surface-hover transition-colors"
               >
-                <Stamp className="w-4 h-4" />
                 Adicionar carimbo na página
               </button>
             )}
@@ -272,7 +260,7 @@ export default function StampPage() {
                   step="0.01"
                   value={selectedPlacement.w}
                   onChange={handleResize}
-                  className="accent-[#1a3a5c] w-full"
+                  className="accent-[#367fb9] w-full"
                 />
                 {selectedPlacement.w === DEFAULT_STAMP_W ? (
                   <span className="text-[10px] text-[#94a3b8] leading-tight">
@@ -282,7 +270,7 @@ export default function StampPage() {
                   <button
                     id="btn-reset-stamp-size"
                     onClick={handleResetSize}
-                    className="text-[10px] text-[#1a3a5c] underline underline-offset-2 text-left hover:text-[#153250] transition-colors"
+                    className="text-[10px] text-[#367fb9] underline underline-offset-2 text-left hover:text-[#286da7] transition-colors"
                   >
                     Restaurar tamanho padrão
                   </button>
@@ -293,7 +281,6 @@ export default function StampPage() {
                 onClick={handleDelete}
                 className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-red-200 text-red-600 text-sm hover:bg-red-50 transition-colors"
               >
-                <Trash2 className="w-4 h-4" />
                 Remover carimbo
               </button>
             </div>
@@ -304,9 +291,8 @@ export default function StampPage() {
               id="btn-save-pdf"
               onClick={handleSave}
               disabled={!pdfBytes || !imageBytes || placements.length === 0 || saving}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#1a3a5c] text-white text-sm font-medium hover:bg-[#153250] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#367fb9] text-white text-sm font-medium hover:bg-[#286da7] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <Save className="w-4 h-4" />
               {saving ? 'Salvando…' : 'Salvar PDF'}
             </button>
             {placements.length === 0 && pdfPath && imageDataUrl && (
@@ -330,7 +316,6 @@ export default function StampPage() {
         <section className="flex-1 flex flex-col gap-3 overflow-hidden">
           {!pdfDoc ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed border-border">
-              <Stamp className="w-14 h-14 text-[#cbd5e1]" />
               <p className="text-[#94a3b8] font-medium">Selecione um PDF para começar</p>
             </div>
           ) : (
@@ -344,6 +329,7 @@ export default function StampPage() {
                 <div className="flex items-center gap-2">
                   <button
                     id="btn-prev-page"
+                    aria-label="Página anterior"
                     onClick={() => setPageIndex((i) => Math.max(0, i - 1))}
                     disabled={pageIndex === 0}
                     className="p-1.5 rounded-lg hover:bg-surface-hover disabled:opacity-30 transition-colors"
@@ -355,6 +341,7 @@ export default function StampPage() {
                   </span>
                   <button
                     id="btn-next-page"
+                    aria-label="Próxima página"
                     onClick={() => setPageIndex((i) => Math.min(pageCount - 1, i + 1))}
                     disabled={pageIndex === pageCount - 1}
                     className="p-1.5 rounded-lg hover:bg-surface-hover disabled:opacity-30 transition-colors"
@@ -386,7 +373,7 @@ export default function StampPage() {
                           cursor: 'move',
                           boxSizing: 'border-box',
                           border: selectedId === p.id
-                            ? '2px solid #1a3a5c'
+                            ? '2px solid #367fb9'
                             : '2px solid rgba(26,58,92,0.3)',
                           borderRadius: '4px',
                           userSelect: 'none',

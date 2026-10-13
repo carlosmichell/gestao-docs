@@ -28,23 +28,23 @@ export default function TitleBar() {
   return (
     <div 
       data-tauri-drag-region 
-      className="h-8 flex justify-between items-center bg-transparent select-none shrink-0"
+      className="h-8 flex justify-between items-center bg-white border-b border-border select-none shrink-0"
     >
       <div data-tauri-drag-region className="flex items-center pl-3 flex-1 h-full">
-        <span data-tauri-drag-region className="text-[#1e293b] text-xs font-semibold tracking-wide">
+        <span data-tauri-drag-region className="text-[#536176] text-xs font-semibold tracking-wide">
           GestãoDocs
         </span>
       </div>
       <div className="flex h-full">
         <button
-          className="w-11 h-full flex justify-center items-center text-[#64748b] hover:bg-[#1e293b]/10 transition-colors"
+          className="w-11 h-full flex justify-center items-center text-[#64748b] hover:bg-[#edf0f4] transition-colors"
           onClick={() => appWindow.minimize()}
           title="Minimizar"
         >
           <Minus className="w-4 h-4" />
         </button>
         <button
-          className="w-11 h-full flex justify-center items-center text-[#64748b] hover:bg-[#1e293b]/10 transition-colors"
+          className="w-11 h-full flex justify-center items-center text-[#64748b] hover:bg-[#edf0f4] transition-colors"
           onClick={() => appWindow.toggleMaximize()}
           title="Maximizar"
         >

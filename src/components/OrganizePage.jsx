@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
 import {
   GripVertical,
-  Plus,
   Trash2,
-  Save,
   Loader2,
-  FileText,
-  Layers,
-  RotateCcw,
-  RotateCw,
 } from 'lucide-react';
 import {
   DndContext,
@@ -45,9 +39,9 @@ const PageItemUI = React.forwardRef(
         style={style}
         className={`relative group rounded-xl overflow-hidden border-2 transition-all duration-200 cursor-pointer ${
           isSelected
-            ? 'border-[#1a3a5c] shadow-md'
-            : 'border-border hover:border-[#1a3a5c]/30 hover:shadow-sm'
-        } ${isOverlay ? 'shadow-2xl scale-105 border-[#1a3a5c] rotate-2' : ''}`}
+            ? 'border-[#367fb9] shadow-md'
+            : 'border-border hover:border-[#367fb9]/30 hover:shadow-sm'
+        } ${isOverlay ? 'shadow-2xl scale-105 border-[#367fb9] rotate-2' : ''}`}
         onClick={() => onSelect?.(item.id)}
       >
         <div
@@ -61,6 +55,7 @@ const PageItemUI = React.forwardRef(
         </div>
         {!isOverlay && (
           <button
+            aria-label={`Remover página ${item.label}`}
             className="absolute top-1 right-1 z-10 p-1 rounded-md bg-white/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50"
             onClick={(e) => {
               e.stopPropagation();
@@ -129,7 +124,7 @@ export default function OrganizePage() {
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
 
-  const accent = '#1a3a5c';
+  const accent = '#367fb9';
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -258,92 +253,81 @@ export default function OrganizePage() {
   };
   return (
     <div className="flex flex-col h-full bg-background font-sans no-drag">
-      <header className="flex items-center gap-4 px-10 pt-8 pb-4 animate-fade-in-down">
-        <div className="flex items-center gap-2 flex-1">
-          <div className="rounded-md p-1.5" style={{ background: `${accent}18` }}>
-            <Layers className="w-5 h-5" style={{ color: accent }} />
+      {pages.length > 0 && (
+        <header className="page-actions flex items-center gap-4">
+          <div className="flex items-center gap-2 flex-1">
+
+            {pages.length > 0 && (
+              <span className="bg-surface-hover text-text-muted px-2.5 py-0.5 rounded-full text-xs font-medium border border-border ml-2">
+                {pages.length} {pages.length === 1 ? 'página' : 'páginas'}
+              </span>
+            )}
           </div>
-          <h1 className="text-text font-semibold text-lg">Organizar PDF</h1>
-          {pages.length > 0 && (
-            <span className="bg-surface-hover text-text-muted px-2.5 py-0.5 rounded-full text-xs font-medium border border-border ml-2">
-              {pages.length} {pages.length === 1 ? 'página' : 'páginas'}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {selectedId && (
-            <>
+          <div className="flex items-center gap-2">
+            {selectedId && (
+              <>
+                <button
+                  onClick={() => handleRotate(selectedId, -90)}
+                  disabled={saving}
+                  title="Girar página selecionada 90° para a esquerda"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border text-text text-sm font-medium hover:bg-surface-hover transition-colors disabled:opacity-40"
+                >
+                  Girar à esquerda
+                </button>
+                <button
+                  onClick={() => handleRotate(selectedId, 90)}
+                  disabled={saving}
+                  title="Girar página selecionada 90° para a direita"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border text-text text-sm font-medium hover:bg-surface-hover transition-colors disabled:opacity-40"
+                >
+                  Girar à direita
+                </button>
+              </>
+            )}
+            {pages.length > 0 && (
               <button
-                onClick={() => handleRotate(selectedId, -90)}
-                disabled={saving}
-                title="Girar página selecionada 90° para a esquerda"
+                onClick={() => handleLoadPdf(true)}
+                disabled={loading}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border text-text text-sm font-medium hover:bg-surface-hover transition-colors disabled:opacity-40"
               >
-                <RotateCcw className="w-4 h-4" />
-                Girar à esquerda
+                Adicionar páginas
               </button>
+            )}
+            {pages.length > 0 && (
               <button
-                onClick={() => handleRotate(selectedId, 90)}
-                disabled={saving}
-                title="Girar página selecionada 90° para a direita"
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border text-text text-sm font-medium hover:bg-surface-hover transition-colors disabled:opacity-40"
+                onClick={handleSave}
+                disabled={saving || pages.length === 0}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-sm font-medium transition-colors disabled:opacity-40"
+                style={{ background: accent }}
               >
-                <RotateCw className="w-4 h-4" />
-                Girar à direita
+                {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+                {saving ? 'Salvando...' : 'Salvar PDF'}
               </button>
-            </>
-          )}
-          {pages.length > 0 && (
-            <button
-              onClick={() => handleLoadPdf(true)}
-              disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border text-text text-sm font-medium hover:bg-surface-hover transition-colors disabled:opacity-40"
-            >
-              <Plus className="w-4 h-4" />
-              Adicionar páginas
-            </button>
-          )}
-          {pages.length > 0 && (
-            <button
-              onClick={handleSave}
-              disabled={saving || pages.length === 0}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-sm font-medium transition-colors disabled:opacity-40"
-              style={{ background: accent }}
-            >
-              {saving ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
-              {saving ? 'Salvando...' : 'Salvar PDF'}
-            </button>
-          )}
-        </div>
-      </header>
-      <main className="flex-1 overflow-y-auto custom-scrollbar px-10 pb-8 animate-fade-in-up">
+            )}
+          </div>
+        </header>
+      )}
+      <main className="organize-workspace flex-1 overflow-y-auto custom-scrollbar px-10 pb-8 animate-fade-in-up">
         {pages.length === 0 ? (
           /* Empty state */
           <div className="h-full flex flex-col items-center justify-center gap-6">
             <div
               onClick={() => handleLoadPdf(false)}
-              className="relative w-full max-w-lg cursor-pointer select-none"
+              className="upload-zone relative w-full max-w-lg cursor-pointer select-none"
               style={{ minHeight: '300px' }}
             >
               <div
-                className="absolute inset-0 rounded-3xl transition-all duration-300 border-2 border-dashed border-border hover:border-[#1a3a5c]/30 bg-white hover:bg-background"
+                className="absolute inset-0 rounded-3xl transition-all duration-300 border-2 border-dashed border-border hover:border-[#367fb9]/30 bg-white hover:bg-background"
                 style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
               />
               <div className="relative z-10 flex flex-col items-center justify-center h-full gap-5 py-16 px-8">
                 {loading ? (
                   <>
-                    <Loader2 className="w-12 h-12 animate-spin" style={{ color: accent }} />
+                    <Loader2 className="w-5 h-5 shrink-0 animate-spin" style={{ color: accent }} />
                     <p className="text-text-muted font-medium">Carregando páginas...</p>
                   </>
                 ) : (
                   <>
-                    <div className="w-20 h-20 rounded-2xl flex items-center justify-center" style={{ background: `${accent}10` }}>
-                      <Layers className="w-10 h-10" style={{ color: accent }} />
-                    </div>
                     <div className="text-center">
                       <p className="text-text font-semibold text-xl">Selecione um PDF para organizar</p>
                       <p className="text-[#94a3b8] text-sm mt-1">

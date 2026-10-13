@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { UploadCloud, FileText, Shield, Layers, CheckCircle2 } from 'lucide-react';
 import { selectPdfFile, onProgress, onFileDrop, ocrPdfPages } from '../lib/tauri-api';
 import { readBinaryFile } from '../lib/file-io';
 import { extractTextFromPdf, hasUsableText, extractPages } from '../lib/pdf-utils';
@@ -9,21 +8,17 @@ import { processSeguro } from '../lib/process-seguro';
 const MODULE_META = {
   trct: {
     label: 'Termos de Rescisão',
-    Icon: FileText,
-    accent: '#1a3a5c',
+    accent: '#367fb9',
     hint: 'Importe o PDF consolidado com os Termos de Rescisão',
     processTexts: (texts) => processTrct(texts),
     combinedLabel: 'Processar junto com Seguro',
-    SecondaryIcon: Shield,
   },
   seguro: {
     label: 'Apólices de Seguro',
-    Icon: Shield,
-    accent: '#1a3a5c',
+    accent: '#367fb9',
     hint: 'Importe o PDF consolidado com as Apólices de Seguro',
     processTexts: (texts) => processSeguro(texts),
     combinedLabel: 'Processar junto com TRCT',
-    SecondaryIcon: FileText,
   },
 };
 
@@ -76,7 +71,7 @@ async function loadPdfWithOcr(filePath, setProgressInfo) {
   return { pdfBytes, pageTexts };
 }
 
-function DropZone({ label, Icon, file, onFileSelected, disabled }) {
+function DropZone({ label, file, onFileSelected, disabled }) {
   const [dragOver, setDragOver] = useState(false);
 
   const handleDragOver = useCallback((e) => {
@@ -109,27 +104,26 @@ function DropZone({ label, Icon, file, onFileSelected, disabled }) {
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className="relative flex-1 cursor-pointer select-none"
+      className="upload-zone relative flex-1 cursor-pointer select-none"
       style={{ minHeight: '260px' }}
     >
       <div
         className="absolute inset-0 rounded-2xl transition-all duration-300"
         style={{
-          border: `2.5px dashed ${file ? '#10b981' : dragOver ? '#1a3a5c' : '#e2e8f0'}`,
+          border: `2.5px dashed ${file ? '#10b981' : dragOver ? '#367fb9' : '#e2e8f0'}`,
           background: file
             ? '#f0fdf4'
             : dragOver
-              ? `color-mix(in srgb, #1a3a5c 6%, transparent)`
+              ? `color-mix(in srgb, #367fb9 6%, transparent)`
               : '#ffffff',
           boxShadow: dragOver
-            ? `0 0 0 6px color-mix(in srgb, #1a3a5c 12%, transparent)`
+            ? `0 0 0 6px color-mix(in srgb, #367fb9 12%, transparent)`
             : '0 1px 3px rgba(0,0,0,0.06)',
         }}
       />
       <div className="relative z-10 flex flex-col items-center justify-center h-full gap-4 py-10 px-6">
         {file ? (
           <>
-            <CheckCircle2 className="w-10 h-10 text-emerald-500" />
             <div className="text-center">
               <p className="text-text font-semibold text-sm break-all">{file}</p>
               <p className="text-[#94a3b8] text-xs mt-1">Clique para trocar</p>
@@ -137,21 +131,6 @@ function DropZone({ label, Icon, file, onFileSelected, disabled }) {
           </>
         ) : (
           <>
-            <div
-              className="w-14 h-14 rounded-xl flex items-center justify-center transition-transform duration-300"
-              style={{
-                background: dragOver ? `#1a3a5c20` : `#1a3a5c10`,
-                transform: dragOver ? 'scale(1.12)' : 'scale(1)',
-              }}
-            >
-              <Icon
-                className="w-7 h-7 transition-transform duration-300"
-                style={{
-                  color: '#1a3a5c',
-                  transform: dragOver ? 'translateY(-3px)' : 'translateY(0)',
-                }}
-              />
-            </div>
             <div className="text-center">
               <p className="text-text font-semibold text-sm">{label}</p>
               <p className="text-[#94a3b8] text-xs mt-1">
@@ -167,7 +146,7 @@ function DropZone({ label, Icon, file, onFileSelected, disabled }) {
 
 export default function ToolPage({ module, onResults }) {
   const meta = MODULE_META[module];
-  const { label, Icon, accent, hint, combinedLabel, SecondaryIcon } = meta;
+  const { label, accent, hint, combinedLabel } = meta;
 
   const [combinedMode, setCombinedMode] = useState(false);
   const [dragOverSingle, setDragOverSingle] = useState(false);
@@ -358,16 +337,7 @@ export default function ToolPage({ module, onResults }) {
 
   return (
     <div className="flex flex-col h-full bg-background font-sans no-drag">
-      <header className="flex items-center gap-4 px-10 pt-8 pb-4 animate-fade-in-down">
-        <div className="flex items-center gap-2 flex-1">
-          <div
-            className="rounded-md p-1.5"
-            style={{ background: `${accent}18` }}
-          >
-            <Icon className="w-5 h-5" style={{ color: accent }} />
-          </div>
-          <h1 className="text-text font-semibold text-lg">{label}</h1>
-        </div>
+      <header className="page-actions flex items-center justify-end gap-4">
         <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-border shadow-sm cursor-pointer select-none" onClick={() => { if(!processing) setCombinedMode(!combinedMode); setError(null); }}>
           <span className="text-sm font-medium text-text whitespace-nowrap">
             {combinedLabel}
@@ -379,11 +349,11 @@ export default function ToolPage({ module, onResults }) {
               checked={combinedMode} 
               readOnly 
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1a3a5c]"></div>
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#367fb9]"></div>
           </label>
         </div>
       </header>
-      <main className="flex-1 flex flex-col items-center justify-center px-10 pb-10 gap-6 animate-fade-in-up">
+      <main className="processing-workspace flex-1 flex flex-col items-center justify-center px-10 pb-10 gap-6 animate-fade-in-up">
         {!combinedMode ? (
           <>
             <p className="text-text-muted text-sm max-w-md text-center">{hint}</p>
@@ -393,7 +363,7 @@ export default function ToolPage({ module, onResults }) {
               onDragOver={handleDragOverSingle}
               onDragLeave={handleDragLeaveSingle}
               onDrop={handleDropSingle}
-              className="relative w-full max-w-2xl cursor-pointer select-none"
+              className="upload-zone relative w-full max-w-2xl cursor-pointer select-none"
               style={{ minHeight: '340px' }}
             >
               <div
@@ -407,7 +377,7 @@ export default function ToolPage({ module, onResults }) {
               <div className="relative z-10 flex flex-col items-center justify-center h-full gap-5 py-16 px-8">
                 {processing ? (
                   <>
-                    <div className="w-16 h-16 rounded-full border-4 border-t-transparent animate-spin" style={{ borderColor: `${accent} transparent ${accent} ${accent}` }} />
+                    <div className="w-5 h-5 shrink-0 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: `${accent} transparent ${accent} ${accent}` }} />
                     <p className="text-text-muted font-medium">{progressInfo?.message ?? 'Processando…'}</p>
                     {progressInfo?.progress != null && (
                       <div className="w-full max-w-xs">
@@ -422,15 +392,11 @@ export default function ToolPage({ module, onResults }) {
                   </>
                 ) : singleFile && !error ? (
                   <>
-                    <CheckCircle2 className="w-14 h-14" style={{ color: accent }} />
                     <p className="text-text font-semibold text-lg">{singleFile}</p>
                     <p className="text-[#94a3b8] text-sm">Arquivo selecionado — clique para processar outro</p>
                   </>
                 ) : (
                   <>
-                    <div className="w-20 h-20 rounded-2xl flex items-center justify-center transition-transform duration-300" style={{ background: dragOverSingle ? `${accent}20` : `${accent}10`, transform: dragOverSingle ? 'scale(1.12)' : 'scale(1)' }}>
-                      <UploadCloud className="w-10 h-10 transition-transform duration-300" style={{ color: accent, transform: dragOverSingle ? 'translateY(-4px)' : 'translateY(0)' }} />
-                    </div>
                     <div className="text-center">
                       <p className="text-text font-semibold text-xl">{dragOverSingle ? 'Solte o arquivo aqui' : 'Arraste o PDF para esta área'}</p>
                       <p className="text-[#94a3b8] text-sm mt-1">ou <span className="underline underline-offset-2" style={{ color: accent }}>clique para selecionar do computador</span></p>
@@ -451,14 +417,14 @@ export default function ToolPage({ module, onResults }) {
               <div className="w-full max-w-2xl flex gap-4 animate-fade-in-up">
                 <DropZone
                   label={`PDF de ${label.replace('Apólices de ', '').replace('Termos de ', '')}`}
-                  Icon={Icon}
+
                   file={primaryFile}
                   onFileSelected={(path, name) => { setPrimaryPath(path); setPrimaryFile(name); setError(null); }}
                   disabled={processing}
                 />
                 <DropZone
                   label={`PDF de ${module === 'trct' ? 'Seguro' : 'TRCT'}`}
-                  Icon={SecondaryIcon}
+
                   file={secondaryFile}
                   onFileSelected={(path, name) => { setSecondaryPath(path); setSecondaryFile(name); setError(null); }}
                   disabled={processing}
@@ -468,7 +434,7 @@ export default function ToolPage({ module, onResults }) {
               <div className="relative w-full max-w-2xl animate-fade-in" style={{ minHeight: '260px' }}>
                 <div className="absolute inset-0 rounded-2xl border-2 border-border bg-white" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }} />
                 <div className="relative z-10 flex flex-col items-center justify-center h-full gap-5 py-16 px-8">
-                  <div className="w-16 h-16 rounded-full border-4 border-t-transparent animate-spin" style={{ borderColor: `${accent} transparent ${accent} ${accent}` }} />
+                  <div className="w-5 h-5 shrink-0 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: `${accent} transparent ${accent} ${accent}` }} />
                   <p className="text-text-muted font-medium">{progressInfo?.message ?? 'Processando…'}</p>
                   {progressInfo?.progress != null && (
                     <div className="w-full max-w-xs">
@@ -492,7 +458,6 @@ export default function ToolPage({ module, onResults }) {
                   cursor: bothSelected ? 'pointer' : 'not-allowed',
                 }}
               >
-                <Layers className="w-4 h-4" />
                 {bothSelected ? 'Processar e Combinar' : 'Selecione ambos os arquivos'}
               </button>
             )}

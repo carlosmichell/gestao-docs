@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, FileOutput, CheckCircle2, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import {
   selectDocFile,
   selectPdfSaveLocation,
@@ -13,7 +13,7 @@ export default function ConvertPage() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
-  const accent = '#1a3a5c';
+  const accent = '#367fb9';
 
   const handleSelectDoc = async () => {
     if (converting) return;
@@ -61,15 +61,7 @@ export default function ConvertPage() {
 
   return (
     <div className="flex flex-col h-full bg-background font-sans no-drag">
-      <header className="flex items-center gap-4 px-10 pt-8 pb-4 animate-fade-in-down">
-        <div className="flex items-center gap-2">
-          <div className="rounded-md p-1.5" style={{ background: `${accent}18` }}>
-            <FileOutput className="w-5 h-5" style={{ color: accent }} />
-          </div>
-          <h1 className="text-text font-semibold text-lg">DOC → PDF</h1>
-        </div>
-      </header>
-      <main className="flex-1 flex flex-col items-center justify-center px-10 pb-10 gap-6 animate-fade-in-up">
+      <main className="convert-workspace flex-1 flex flex-col items-center justify-center px-10 pb-10 gap-6 animate-fade-in-up">
         <p className="text-text-muted text-sm max-w-md text-center">
           Converta documentos Word (.doc, .docx) para PDF utilizando o Microsoft Word instalado no seu computador.
         </p>
@@ -82,13 +74,12 @@ export default function ConvertPage() {
             <button
               onClick={handleSelectDoc}
               disabled={converting}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-border hover:border-[#1a3a5c]/30 hover:bg-background transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-border hover:border-[#367fb9]/30 hover:bg-background transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <FileText className="w-5 h-5 text-text-muted" />
               <span className="text-sm text-text font-medium flex-1 text-left truncate">
                 {docName || 'Clique para selecionar um arquivo .doc ou .docx'}
               </span>
-              {docName && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
+
             </button>
           </div>
           <div className="p-6">
@@ -100,7 +91,6 @@ export default function ConvertPage() {
             {result ? (
               <div className="flex flex-col gap-3 animate-fade-in">
                 <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-emerald-800">Conversão concluída!</p>
                     <p className="text-xs text-emerald-600 truncate">{result.path}</p>
@@ -134,7 +124,6 @@ export default function ConvertPage() {
                   </>
                 ) : (
                   <>
-                    <FileOutput className="w-4 h-4" />
                     {docPath ? 'Converter para PDF' : 'Selecione um documento primeiro'}
                   </>
                 )}
